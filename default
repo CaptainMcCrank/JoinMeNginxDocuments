@@ -45,7 +45,7 @@ server {
     }
 
     location / {
-        try_files $uri uri/ @werc;
+        try_files $uri uri/ @werc; # first, try the uri submitted by the user.  next, search the uri/ directory under root.  finally, give up and go the the @werc location for processing. 
     }
 
     location /pub/ {
@@ -60,8 +60,11 @@ server {
 
     error_page 404 = @werc;
 
+    # The “@” prefix defines a named location. Such a location is not used for a regular request processing, but instead used for request redirection. They cannot be nested, and cannot contain nested locations.
+
+
     location @werc {
-        include fastcgi_params;
-        fastcgi_pass localhost:3333;
+        include fastcgi_params; # located in /etc/nginx/
+        fastcgi_pass localhost:3333; # send traffic to our gcd server, which is invoked with # sudo /usr/local/go/bin/cgd -f -c /var/www/ansibledest.local/bin/werc.rc > /dev/null 2>&1 &
     }
 }
