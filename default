@@ -1,4 +1,4 @@
-
+# Let's redirect all unencrypted traffic to TLS:
 server {
     listen 80 default_server;
     return 301 https://$host$request_uri;
@@ -10,18 +10,21 @@ server {
     listen 443 ssl;
     server_name ansibledest.local;
 
+    # You can generate your own self-signed tls certs with the following:
+    # sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+
+    # the self-signed.conf points to the key & crt you created in the openssl command above!  ssl-params is just tls security settings needed by Tokumei
     include snippets/self-signed.conf;
     include snippets/ssl-params.conf;
 
 
-    client_max_body_size 100M;
+    client_max_body_size 100M; #Tokumei setting for max file uploads to the anon board.
     
     root /var/www/ansibledest.local/sites/\$host/;
     index index.html;
 
     location /offgrid {
-        #return 200 'location 2'; # You can use this command to debug if your location is getting called in nginx!
-
+        #return 200 'location 2'; # If you ever doubt that a location is firing, you can use this command to debug and confirm it!
 	
 	# This is how I made the directory listing of mp3s downloadable, while rtf's get rendered. 
 	types {
